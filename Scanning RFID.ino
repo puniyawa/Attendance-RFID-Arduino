@@ -12,12 +12,12 @@ LiquidCrystal_I2C lcd(0x27, 16, 2);
 // ======================== SETTINGS ========================
 
 // Enter Google Script Deployment ID:
-const char *GScriptId = "AKfycbzMx3apYeijh7VqqkneBIMS2aSS2PctnfIMHnR2rmOfT5e1WUfp2J_lAbP0m82oFnk";
+const char *GScriptId = "";
 String gate_number = "Gate1";
 
 // Enter WIFI:
-const char* ssid     = "PLDTHOMEFIBRb8c30";
-const char* password = "PLDTWIFIx9kzh";
+const char* ssid     = "";
+const char* password = "";
 
 // Show WIFI name in the LCD
 const bool showSSID = true;
