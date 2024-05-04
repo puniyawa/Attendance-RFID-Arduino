@@ -67,6 +67,7 @@ void setup() {
 }
 
 void loop() {
+  // Setting the datatype to JSON
   static bool flag = false;
   if (!flag){
     client = new HTTPSRedirect(httpsPort);
@@ -76,7 +77,7 @@ void loop() {
     client->setContentTypeHeader("application/json");
   }
   
-  // If disconnected
+  // Checking if its Disconnected, if its not disconnected, it will continue to scanning
   if (client != nullptr){
     if (!client->connected()){
       int retval = client->connect(host, httpsPort);
@@ -90,23 +91,25 @@ void loop() {
       }
     }
   }
-
+  
   // Scanning for RFID CARD
   lcd.clear();
   lcd.setCursor(0,0);
   lcd.print("Scan your card");
 
   mfrc522.PCD_Init();
+
+  // Returning if there is no card present, and there's no reading of serial
   if (!mfrc522.PICC_IsNewCardPresent()) {
-    delay(1000);
+    delay(1000); // Reduces Flicker
     return;
   }
   if (!mfrc522.PICC_ReadCardSerial()) {
-    delay(1000);
+    delay(1000); // Reduces Flicker
     return;
   }
 
-  // Read Data from RFID Card
+  // Read Data from RFID Card if IsNewCardPresent() and ReadCardSerial() is successful
   String values = "", data;
 
   for (byte i = 0; i < total_blocks; i++) {
@@ -127,13 +130,13 @@ void loop() {
   values += gate_number + "\"}";
   payload = payload_base + values;
 
-  //----------------------------------------------------------------
+  // Display to LCD the publishing of data to Google Sheets
   lcd.clear();
   lcd.setCursor(0,0); 
   lcd.print("Writing Data");
   lcd.setCursor(0,1); 
   lcd.print("to Google Sheets...");
-  //----------------------------------------------------------------
+  
   // Publish data to Google Sheets
   if(client->POST(url, host, payload)){ 
     lcd.clear();
