@@ -1,0 +1,96 @@
+
+// ======================== SETTINGS ========================
+// Enter Spreadsheet ID here
+var SS = SpreadsheetApp.openById('1IsKcCgWfTgZdAidP39PNwyHG5mPxdUMa7upB416765A');
+// Timezone
+var timezone = "Asia/Manila";
+// ==========================================================
+
+var hours = 0;
+var str = "";
+
+function doPost(e) {
+  var parsedData;
+  var result = {};
+ 
+  try {
+    parsedData = JSON.parse(e.postData.contents);
+  }
+  catch(f){
+    return ContentService.createTextOutput("Error in parsing request body: " + f.message);
+  }
+   
+  if (parsedData !== undefined){
+    var flag = parsedData.format;
+    if (flag === undefined){
+      flag = 0;
+    }
+   
+    var sheet = SS.getSheetByName(parsedData.sheet_name); // sheet name to publish data to is specified in Arduino code
+    var dataArr = parsedData.values.split(","); // creates an array of the values to publish
+         
+    var Curr_Date = Utilities.formatDate(new Date(), timezone, "MM/dd/yyyy"); // gets the current date
+    var Curr_Time = Utilities.formatDate(new Date(), timezone, "hh:mm:ss a"); // gets the current time
+
+    // Data from Arduino
+    var value0 = dataArr [0];  //Student ID
+    var value1 = dataArr [1];  //First Name
+    var value2 = dataArr [2];  //Last Name
+    var value3 = dataArr [3];  //Middle Initial
+
+    // Check if user is already logged-in
+    var isLogged = false;
+
+    var search_string = value0;
+    var textFinder = sheet.createTextFinder(search_string);
+    var search_row = textFinder.findAll();
+    search_row.forEach(function(value){
+      var index_row = value.getRow();
+      // Get the cell
+      var cell = 'C' + index_row;
+      var index_date = sheet.getRange(cell).getValues();
+      var dateConv = Utilities.formatDate(new Date(index_date), timezone, "MM/dd/yyyy");
+      if (dateConv == Curr_Date){ 
+        isLogged = true;
+      }
+    })
+    
+    if(isLogged == false){
+      switch (parsedData.command) {
+        case "insert_row":
+          sheet.insertRows(2);                       // insert full row directly below header text
+        
+          sheet.getRange('A2').setValue(value0);     // publish STUDENT ID to cell A2
+          sheet.getRange('B2').setValue(Curr_Time);  // publish TIME IN to cell B2
+          sheet.getRange('C2').setValue(Curr_Date);  // publish DATE to cell E2
+          sheet.getRange('D2').setValue(value1);     // publish FIRST NAME cell F2
+          sheet.getRange('E2').setValue(value2);     // publish LAST NAME cell G2
+          sheet.getRange('F2').setValue(value3);     // publish MIDDLE INITIAL cell H2
+        
+          str = "Success";                           // Return status sent to arduino
+          SpreadsheetApp.flush();
+          break;
+        
+        case "append_row":
+          var publish_array = new Array();    
+        
+          publish_array [0] = value0;                // publish Student ID to cell A2
+          publish_array [1] = Curr_Time;             // publish Time In to cell B2
+          publish_array [3] = Curr_Date;             // publish current date to cell C2
+          publish_array [4] = value1;                // publish First Name cell D2
+          publish_array [5] = value2;                // publish Last Name cell E2
+          publish_array [6] = value3;                // publish Middle Initial cell F2
+        
+          sheet.appendRow(publish_array);            // publish data in publish_array after the last row of data in the sheet
+        
+          str = "Success";                           // Return status sent to arduino
+          SpreadsheetApp.flush();
+          break;    
+      }
+    }
+    return ContentService.createTextOutput(str);
+  } 
+  else {
+    return ContentService.createTextOutput("Error! Request body empty or in incorrect format.");
+  }
+}
