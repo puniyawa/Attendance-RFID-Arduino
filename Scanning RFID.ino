@@ -50,10 +50,7 @@ HTTPSRedirect* client = nullptr;
 String student_id;
 
 int blocks[] = {4,5,6,8,9};
-
-
 int blockNum = 2;  
-
 byte bufferLen = 18;
 byte readBlockData[18];
 
