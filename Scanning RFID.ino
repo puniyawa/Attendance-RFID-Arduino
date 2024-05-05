@@ -7,7 +7,16 @@
 #include<Wire.h>
 #include<LiquidCrystal_I2C.h>
 
-LiquidCrystal_I2C lcd(0x27, 16, 2);
+#define total_blocks  (sizeof(blocks) / sizeof(blocks[0]))
+#define RST_PIN  0  //D3
+#define SS_PIN   2  //D4
+#define BUZZER   4  //D2
+
+MFRC522 mfrc522(SS_PIN, RST_PIN);        // Reference RFID PCV Scanner
+MFRC522::MIFARE_Key key;  
+MFRC522::StatusCode status;
+
+LiquidCrystal_I2C lcd(0x27, 16, 2);      // Reference LCD Display
 
 // ======================== SETTINGS ========================
 
@@ -42,14 +51,6 @@ String student_id;
 
 int blocks[] = {4,5,6,8,9};
 
-#define total_blocks  (sizeof(blocks) / sizeof(blocks[0]))
-#define RST_PIN  0  //D3
-#define SS_PIN   2  //D4
-#define BUZZER   4  //D2
-
-MFRC522 mfrc522(SS_PIN, RST_PIN);
-MFRC522::MIFARE_Key key;  
-MFRC522::StatusCode status;
 
 int blockNum = 2;  
 
