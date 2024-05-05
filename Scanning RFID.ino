@@ -1,3 +1,7 @@
+#include <dummy.h>
+
+#include <dummy.h>
+
 #include <Arduino.h>
 #include <ESP8266WiFi.h>
 #include <SPI.h>
@@ -12,18 +16,19 @@ LiquidCrystal_I2C lcd(0x27, 16, 2);
 // ======================== SETTINGS ========================
 
 // Enter Google Script Deployment ID:
-const char *GScriptId = "";
+const char *GScriptId = "AKfycbzMx3apYeijh7VqqkneBIMS2aSS2PctnfIMHnR2rmOfT5e1WUfp2J_lAbP0m82oFnk";
 String gate_number = "Gate1";
 
 // Enter WIFI:
-const char* ssid     = "";
-const char* password = "";
+const char* ssid     = "PLDTHOMEFIBRb8c30";
+const char* password = "PLDTWIFIx9kzh";
 
 // Show WIFI name in the LCD
 const bool showSSID = true;
 // How many reconnection attempts
 const int reconAttemps = 5;
-
+// Greetings
+const char* greetingsMsg = "Dangal Greetings";
 // ==========================================================
 
 String payload_base =  "{\"command\": \"insert_row\", \"sheet_name\": \"Sheet3\", \"values\": ";
@@ -67,7 +72,6 @@ void setup() {
 }
 
 void loop() {
-  // Setting the datatype to JSON
   static bool flag = false;
   if (!flag){
     client = new HTTPSRedirect(httpsPort);
@@ -77,7 +81,7 @@ void loop() {
     client->setContentTypeHeader("application/json");
   }
   
-  // Checking if its Disconnected, if its not disconnected, it will continue to scanning
+  // If disconnected
   if (client != nullptr){
     if (!client->connected()){
       int retval = client->connect(host, httpsPort);
@@ -91,25 +95,23 @@ void loop() {
       }
     }
   }
-  
+
   // Scanning for RFID CARD
   lcd.clear();
   lcd.setCursor(0,0);
   lcd.print("Scan your card");
 
   mfrc522.PCD_Init();
-
-  // Returning if there is no card present, and there's no reading of serial
   if (!mfrc522.PICC_IsNewCardPresent()) {
-    delay(1000); // Reduces Flicker
+    delay(1000);
     return;
   }
   if (!mfrc522.PICC_ReadCardSerial()) {
-    delay(1000); // Reduces Flicker
+    delay(1000);
     return;
   }
 
-  // Read Data from RFID Card if IsNewCardPresent() and ReadCardSerial() is successful
+  // Read Data from RFID Card
   String values = "", data;
 
   for (byte i = 0; i < total_blocks; i++) {
@@ -130,18 +132,18 @@ void loop() {
   values += gate_number + "\"}";
   payload = payload_base + values;
 
-  // Display to LCD the publishing of data to Google Sheets
+  //----------------------------------------------------------------
   lcd.clear();
   lcd.setCursor(0,0); 
   lcd.print("Writing Data");
   lcd.setCursor(0,1); 
   lcd.print("to Google Sheets...");
-  
+  //----------------------------------------------------------------
   // Publish data to Google Sheets
   if(client->POST(url, host, payload)){ 
     lcd.clear();
     lcd.setCursor(0,0); 
-    lcd.print("Dangal Greetings ");
+    lcd.print(greetingsMsg);
     lcd.setCursor(0,1); 
     lcd.print("ID:" + student_id);
 
@@ -269,5 +271,3 @@ void ReadDataFromBlock(int blockNum, byte readBlockData[])
     readBlockData[17] = ' ';
   }
 }
-
-
