@@ -4,15 +4,14 @@
 const uint8_t RST_PIN = D3;
 const uint8_t SS_PIN = D4;
 
-MFRC522 mfrc522(SS_PIN, RST_PIN);
+MFRC522 mfrc522(SS_PIN, RST_PIN);       // Instance RFID PVC
 MFRC522::MIFARE_Key key;        
+MFRC522::StatusCode status;
 
 int blockNum = 4;
 
 byte bufferLen = 18;
 byte readBlockData[18];
-
-MFRC522::StatusCode status;
 
 void setup() 
 {
