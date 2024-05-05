@@ -17,20 +17,21 @@ LiquidCrystal_I2C lcd(0x27, 16, 2);
 
 // Enter Google Script Deployment ID:
 const char *GScriptId = "AKfycbzMx3apYeijh7VqqkneBIMS2aSS2PctnfIMHnR2rmOfT5e1WUfp2J_lAbP0m82oFnk";
-String gate_number = "Gate1";
 
 // Enter WIFI:
 const char* ssid     = "PLDTHOMEFIBRb8c30";
 const char* password = "PLDTWIFIx9kzh";
 
+/*          OPTIONS           */
 // Show WIFI name in the LCD
 const bool showSSID = true;
 // How many reconnection attempts
 const int reconAttemps = 5;
 // Greetings
 const char* greetingsMsg = "Dangal Greetings";
-// ==========================================================
 
+// ==========================================================
+String gate_number = "Gate1";
 String payload_base =  "{\"command\": \"insert_row\", \"sheet_name\": \"Sheet3\", \"values\": ";
 String payload = "";
 
